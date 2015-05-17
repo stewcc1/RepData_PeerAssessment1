@@ -1,0 +1,60 @@
+---
+title: "Peer Assessment 1, Activity Report"
+author: "Chris Stewart"
+date: "Monday, May 11, 2015"
+output: html_document
+---
+This report documents the analysis of activity data for Peer Assessment 1 in Reproducible Research.
+
+First, read and process the data from activity.csv
+```{r}
+mydata<-read.table("activity.csv", header=TRUE, sep=',', na.strings='NA')
+mydata$newdate<-as.Date(as.character(mydata$date), "%Y-%m-%d")
+```
+
+*Part 1: What is mean total number of steps taken per day?*  
+use dplyr to summarize data by date and calculate total steps
+```{r}
+library(dplyr)
+tbl<-tbl_df(mydata)
+bydate<-group_by(tbl, newdate)
+stepsum<-summarize(bydate, TotalSteps=sum(steps))
+head(stepsum)
+```
+Here is a histogram of the total number of steps taken each day:
+```{r}
+hist(stepsum$TotalSteps)
+```
+  
+Now, what is the mean and median of total daily steps?
+```{r}
+meanst<-mean(stepsum$TotalSteps, na.rm=T)
+meanst
+medst<-median(stepsum$TotalSteps, na.rm=T)
+medst
+```
+*Part 2:  Plot average steps by 5-minute interval.  Which has the highest average steps?
+```{r}
+ intsum<-tbl%>%filter(!is.na(steps))%>%group_by(interval)%>%summarize(AvgSteps=mean(steps))
+plot(intsum$interval, intsum$AvgSteps, type='l')
+print("Here is the top interval:")
+topSteps<-intsum%>%arrange(desc(AvgSteps))
+head(topSteps, n=1)
+```
+*Part 3: Impute missing values - we will use mean value for the interval to replace NA in steps
+```{r}
+mergemeans<-merge(mydata, intsum, by="interval")
+mergemeans$newSteps<-ifelse(is.na(mergemeans$steps), mergemeans$AvgSteps, mergemeans$steps)
+myNewData<-select(mergemeans, steps=newSteps, newdate, interval)
+```
+Summarize and recreate daily histogram:
+```{r}
+myNewSum<-myNewData%>%group_by(newdate)%>%summarize(TotalSteps=sum(steps))
+hist(myNewSum$TotalSteps)
+meanst<-mean(myNewSum$TotalSteps, na.rm=T)
+meanst
+medst<-median(myNewSum$TotalSteps, na.rm=T)
+medst
+```
+As you might expect, replacing the missings with means increases the number of values in the middle of the distribution in the histogram, but changes the median very little and the mean not at all.  
+*Part 4:

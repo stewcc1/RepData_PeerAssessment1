@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
@@ -14,22 +19,6 @@ use dplyr to summarize data by date and calculate total steps
 
 ```r
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-## 
-## The following object is masked from 'package:stats':
-## 
-##     filter
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 tbl<-tbl_df(mydata)
 bydate<-group_by(tbl, newdate)
 stepsum<-summarize(bydate, TotalSteps=sum(steps))
@@ -53,13 +42,13 @@ Here is a histogram, mean and median of the total number of steps taken each day
 hist(stepsum$TotalSteps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 ```r
 meanst<-mean(stepsum$TotalSteps, na.rm=T)
 medst<-median(stepsum$TotalSteps, na.rm=T)
 ```
-The mean of total daily steps is 1.0766189\times 10^{4} and median is 10765.
+The mean of total daily steps is 1.0766189 &times; 10<sup>4</sup> and median is 10765.
 
 ## What is the average daily activity pattern?
 
@@ -68,7 +57,7 @@ The mean of total daily steps is 1.0766189\times 10^{4} and median is 10765.
 plot(intsum$interval, intsum$AvgSteps, type='l')
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 ```r
 topSteps<-intsum%>%arrange(desc(AvgSteps))
@@ -90,13 +79,13 @@ myNewSum<-myNewData%>%group_by(newdate)%>%summarize(TotalSteps=sum(steps))
 hist(myNewSum$TotalSteps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 ```r
 meanst2<-mean(myNewSum$TotalSteps, na.rm=T)
 medst2<-median(myNewSum$TotalSteps, na.rm=T)
 ```
-The new mean of total daily steps is 1.0766189\times 10^{4} and median is now 1.0766189\times 10^{4}.
+The new mean of total daily steps is 1.0766189 &times; 10<sup>4</sup> and median is now 1.0766189 &times; 10<sup>4</sup>.
 As you might expect, replacing the missings with means increases the number of values in the middle of the distribution in the histogram, but changes the median very little and the mean not at all. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -113,5 +102,5 @@ xyplot(myNewSum$TotalSteps~myNewSum$interval|myNewSum$weekend.f, type="b",
         layout=c(1,2))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
 Not surprisingly, there is significantly more activity on weekdays and it starts earlier than on weekends!
